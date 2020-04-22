@@ -41,7 +41,7 @@ def insert():
         return user 
     else:
         cursor.close()
-        return 'Usuario ja existe'
+        return {}
 
 @app.route('/user/login', methods=['POST'])
 def login():
@@ -60,10 +60,10 @@ def login():
                     WHERE name = %s AND password = %s''', [name, password])
         mysql.connection.commit()
         cursor.close() 
-        return 'OK'
+        return {"status": "OK"}
     else:
         cursor.close()
-        return 'ERROR'
+        return {"status": "ERROR"}
 
 
 if __name__ == '__main__':
