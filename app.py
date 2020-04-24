@@ -20,9 +20,14 @@ def createDbs():
 
 @app.route('/user/insert', methods=['POST'])
 def insert():
-    name = request.json['name']
-    password = request.json['password']
-
+    # name = request.json['name']
+    # password = request.json['password'] 
+    data = request.get_json(force=True)
+    
+    name = data['name']
+    password = data['password']
+    print(name)
+    print(password)
     cursor = mysql.connection.cursor()
 
     cursor.execute('''SELECT `name`
@@ -45,8 +50,12 @@ def insert():
 
 @app.route('/user/login', methods=['POST'])
 def login():
-    name = request.json['name']
-    password = request.json['password']
+    data = request.get_json(force=True)
+    
+    name = data['name']
+    password = data['password']
+    print(name)
+    print(password)
 
     cursor = mysql.connection.cursor()
 
