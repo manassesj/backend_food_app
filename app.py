@@ -13,6 +13,8 @@ def createDbs():
                         `password` varchar(32) NOT NULL,
                         PRIMARY KEY (`id`)
                         )''')
+
+        cursor.close() 
         return 'Sucess in create tables'
     except:
         return 'An except occurred'
@@ -26,10 +28,10 @@ def insert():
     
     name = data['name']
     password = data['password']
-    print(name)
-    print(password)
+    print("NAME: " + name)
+    print("PASSWORD: " + password)
     cursor = mysql.connection.cursor()
-
+    
     cursor.execute('''SELECT `name`
                     FROM `User`
                     WHERE name = %s''', [name])
@@ -54,26 +56,60 @@ def login():
     
     name = data['name']
     password = data['password']
-    print(name)
-    print(password)
+    print("NAME: " + name)
+    print("PASSWORD: " + password)
 
     cursor = mysql.connection.cursor()
 
-    cursor.execute('''SELECT `name`
+    cursor.execute('''SELECT `id`, `name`
                     FROM `User`
                     WHERE name = %s''', [name])
 
     if len(cursor.fetchall()) > 0:
-        cursor.execute('''SELECT `name`, `password`
+        cursor.execute('''SELECT `id`,`name`, `password`
                     FROM `User`
                     WHERE name = %s AND password = %s''', [name, password])
+        user = cursor.fetchone()
         mysql.connection.commit()
         cursor.close() 
-        return {"status": "OK"}
+        return user
     else:
         cursor.close()
         return {"status": "ERROR"}
 
+#FOOD ROUTES
 
-if __name__ == '__main__':
+@app.route('/food/insert', methods=['POST'])
+def insertFood():
+    data = request.get_json(force=True)
+
+    name = data['name']
+    image = data['image']
+    description = data['description']
+    category_id = data['category_id']
+    price = data['price']
+    discount = data['discount']
+    rating = data['rating']
+    
+    print("NAME: " + name)
+    print("IMAGE: " + image)
+
+    cursor = mysql.connection.cursor()
+
+    cursor.execute('''INSERT INTO `food`(`name`, `image`, `description`, `category_id`, `price`, `discount`, `rating`) 
+                        VALUES (%s, %s, %s, %s, %s, %s, %s)''', [name, image, description, category_id, price, discount, rating])
+
+
+    cursor.execute('''SELECT * FROM `food` 
+                    ORDER BY id DESC
+                    LIMIT 1''')
+    Food = cursor.fetchone()
+
+    mysql.connection.commit()
+    cursor.close() 
+    return Food
+
+
+
+if __name__ == '__main__': 
     app.run(host='0.0.0.0', debug=True)
