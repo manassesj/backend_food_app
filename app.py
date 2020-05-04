@@ -109,7 +109,45 @@ def insertFood():
     cursor.close() 
     return Food
 
+@app.route('/food/getAll', methods=['GET'])
+def getAllFoods():
 
+            
+    cursor = mysql.connection.cursor()
+
+    query = '''SELECT * 
+            FROM `food`
+            ORDER BY id ASC'''
+    cursor.execute(query)
+
+    foods = cursor.fetchall()
+    
+    json_foods = {}
+        
+    for food in foods:
+        id = food['id']
+        name = food['name']
+        image = food['image']
+        description = food['description']
+        category_id = food['category_id']
+        price = food['price']
+        discount = food['discount']
+        rating = food['rating']
+
+        json_foods[id] = {
+            'name' : name,
+            'image' : image,
+            'description':  description,
+            'category_id': category_id,
+            'price': price,
+            'discount': discount,
+            'rating': rating
+        }
+        print(json_foods)
+
+    mysql.connection.commit()
+    cursor.close() 
+    return json_foods
 
 if __name__ == '__main__': 
     app.run(host='0.0.0.0', debug=True)
